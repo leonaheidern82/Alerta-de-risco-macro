@@ -1,0 +1,21 @@
+//@version=5
+indicator("Alerta de Aumento Rápido na Dominância do Tether", overlay=false)
+
+// Define o timeframe e o símbolo para a dominância do Tether em 1 hora
+usdtDominance = request.security("CRYPTOCAP:USDT.D", "60", close)
+
+// Defina a variação percentual limite (3%)
+percentChangeThreshold = 3.0
+
+// Calcule a variação percentual de uma vela de 1 hora para a próxima
+percentChange = (usdtDominance - ta.valuewhen(not na(usdtDominance[1]), usdtDominance[1], 0)) / usdtDominance[1] * 100
+
+// Condição para aumento significativo na dominância do Tether
+triggerAlert = (percentChange >= percentChangeThreshold)
+
+// Plotagem para visualização no gráfico
+plot(percentChange, title="Variação % Dominância Tether", color=color.blue)
+hline(percentChangeThreshold, "Limite 3%", color=color.red)
+
+// Gera um sinal visual no gráfico quando a condição é atendida
+plotshape(series=triggerAlert, title="Alerta de Aumento", location=location.abovebar, color=color.red, style=shape.labelup, text="↑ Alerta")
